@@ -2,7 +2,7 @@ import random
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 페이지 설정
+# 페이지 설정 (사이드바 없이 중앙 배치)
 st.set_page_config(
     page_title="오늘의 운세 뽑기", page_icon="🎯", layout="centered"
 )
@@ -20,7 +20,6 @@ if "fortune_result" not in st.session_state:
 # 운세 판정 및 랜덤 효과 매핑 함수
 def get_fortune(number):
     if number >= 81:
-        # 81~100점 구간 무작위 효과 선택
         effects = ["gold_pulse", "rainbow_sparkle", "king_crown"]
         return (
             "🌟 대길 (최고의 대폭발 행운!)",
@@ -28,7 +27,6 @@ def get_fortune(number):
             random.choice(effects),
         )
     elif number >= 51:
-        # 51~80점 구간 무작위 효과 선택
         effects = ["clover_float", "star_bounce", "happy_7"]
         return (
             "✨ 길 (대단히 좋은 하루)",
@@ -36,7 +34,6 @@ def get_fortune(number):
             random.choice(effects),
         )
     elif number >= 41:
-        # 41~50점 구간 무작위 효과 선택
         effects = ["joker_spin", "coffee_relax"]
         return (
             "☕ 평 (무난하고 평범한 하루)",
@@ -44,7 +41,6 @@ def get_fortune(number):
             random.choice(effects),
         )
     else:
-        # 1~40점 구간 무작위 효과 선택 (다양한 아쉬운 효과들)
         effects = ["sad_spade", "broken_heart", "thunder_skull"]
         return (
             "💀 대흉 (절망적인 운세...)",
@@ -82,7 +78,6 @@ if st.session_state.has_drawn:
 
     st.metric(label="나의 행운의 숫자 (1~100)", value=f"{num}점")
 
-    # 결과 텍스트 출력
     st.markdown(f"### {title}")
     st.markdown(f"{desc}")
 
@@ -172,7 +167,7 @@ if st.session_state.has_drawn:
         """
         components.html(card_html, height=250)
 
-    # [1~40점 효과들 - 아쉬운 연출들]
+    # [1~40점 효과들]
     elif effect in ["sad_spade", "broken_heart", "thunder_skull"]:
         if effect == "sad_spade":
             card_code = '<div class="card shake-card"><div class="top">♠ A</div><div class="center">😭</div><div class="bottom">♠ A</div></div>'
@@ -200,11 +195,3 @@ if st.session_state.has_drawn:
         <div class="container">{card_code}</div>
         """
         components.html(card_html, height=250)
-
-# 사이드바 안내
-with st.sidebar:
-    st.markdown("### 💡 이용 안내")
-    st.markdown("- **81 ~ 100점**: 폭죽 + 랜덤 황금 계열 카드")
-    st.markdown("- **51 ~ 80점**: 눈 내림 + 랜덤 행운 계열 카드")
-    st.markdown("- **41 ~ 50점**: 회전/흔들림 무난한 카드")
-    st.markdown("- **1 ~ 40점**: 랜덤 좌절/아쉬움 카드 효과 (울기, 깨진 하트, 번개)")
