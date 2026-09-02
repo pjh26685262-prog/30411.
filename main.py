@@ -7,70 +7,7 @@ st.set_page_config(
     page_title="오늘의 운세 뽑기", page_icon="🎯", layout="centered"
 )
 
-# =========================================================
-# 🆕 [바뀐 부분 1] GIF 지원 및 사용자 커스텀 설정 (사이드바)
-# =========================================================
-st.sidebar.header("🎨 배경 캐릭터 커스텀")
-
-# 1. 테마/모드 선택 (이모지 or GIF)
-char_mode = st.sidebar.radio("캐릭터 유형 선택", ["움직이는 GIF 이미지 🎬", "이모지 🧸"])
-
-selected_items = []
-is_gif = False
-
-if char_mode == "움직이는 GIF 이미지 🎬":
-    is_gif = True
-    gif_preset = st.sidebar.selectbox(
-        "GIF 테마 선택",
-        ["귀여운 고양이들 🐱", "짱구 & 친구들 👦", "직접 GIF URL 입력"]
-    )
-    
-    if gif_preset == "귀여운 고양이들 🐱":
-        selected_items = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgzZnpqam12ZmljMmxqZHk3aGs0aWs2Zm5ndXVpMmgzeHNvdnhmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jpbnoe3UIa8TU8LM13/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGN5cG1wbnhxdmsyY2tzOHhhNzVnbms0cWhzeXFkODd4c2xmbmt4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/C14EipS9xR3pBKa7y4/giphy.gif"
-        ]
-    elif gif_preset == "짱구 & 친구들 👦":
-        selected_items = [
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDRkZnJmbXNsbms1bjRraXRiN3VqMWs1MnA2MnN4cXlydnE5a2VzOSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HqtP4R14R72o3lR99j/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjRreTlxaXZxeHZwbG5oNzYxdndxc3ltYngyeWtybjAyaDZvYWRvZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjRrfIPjeiVyM/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaG13MGdhdmt0MmJodmZ0azVvZXVzMDR2aHN2dnU2OHUwcjU2b2s0ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4Epf0fOag3zBvT20/giphy.gif",
-            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbDVqbm1wYnlva21xdDRubmlhMWkxbXphNG4ydWhsOXZreXpvcWF5YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13A7Ytf2tTHyOU/giphy.gif"
-        ]
-    else:
-        gif_input = st.sidebar.text_area("GIF 이미지 URL 4개 (줄바꿈 구분)", "https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif")
-        selected_items = [url.strip() for url in gif_input.split('\n') if url.strip()]
-        while len(selected_items) < 4:
-            selected_items.append("https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif")
-
-else:
-    char_preset = st.sidebar.selectbox(
-        "이모지 테마 선택",
-        ["동물 친구들 🧸🐱🐰🐶", "운세 & 행운 🍀🔮🌟💰", "직접 입력"]
-    )
-    if char_preset == "동물 친구들 🧸🐱🐰🐶":
-        selected_items = ["🧸", "🐱", "🐰", "🐶"]
-    elif char_preset == "운세 & 행운 🍀🔮🌟💰":
-        selected_items = ["🍀", "🔮", "🌟", "💰"]
-    else:
-        custom_input = st.sidebar.text_input("이모지 4개 입력 (공백 구분)", "🦊 🐼 🐯 🦄")
-        selected_items = custom_input.split()
-        while len(selected_items) < 4:
-            selected_items.append("✨")
-
-# 2. 크기 및 투명도 조절
-char_size = st.sidebar.slider("크기 (px)", min_value=30, max_value=120, value=70)
-char_opacity = st.sidebar.slider("투명도", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
-
-# 3. 애니메이션 속도 조절
-anim_speed = st.sidebar.select_slider("둥둥 떠다니는 속도", options=["느리게", "보통", "빠르게"], value="보통")
-speed_multiplier = {"느리게": 1.5, "보통": 1.0, "빠르게": 0.5}[anim_speed]
-
-# =========================================================
-# 세션 상태 및 운세 판정 로직 (기존과 동일)
-# =========================================================
+# 세션 상태 초기화
 if "has_drawn" not in st.session_state:
     st.session_state.has_drawn = False
 if "drawn_number" not in st.session_state:
@@ -78,6 +15,7 @@ if "drawn_number" not in st.session_state:
 if "fortune_result" not in st.session_state:
     st.session_state.fortune_result = None
 
+# 운세 판정 및 랜덤 효과 매핑 함수
 def get_fortune(number):
     if number >= 81:
         effects = ["gold_pulse", "rainbow_sparkle", "king_crown"]
@@ -92,9 +30,88 @@ def get_fortune(number):
         effects = ["sad_spade", "broken_heart", "thunder_skull"]
         return ("💀 대흉 (절망적인 운세...)", "앗... 점수가 너무 낮습니다! 오늘은 발밑을 조심하시고 중요한 결정은 내일로 미루시는 게 좋겠어요...", random.choice(effects))
 
+# UI 타이틀
 st.title("🎯 하루 한 번 운세 뽑기")
-st.write("버튼을 눌러 오늘의 행운의 숫자를 확인하고 운세를 점쳐보세요!")
+
+# =========================================================
+# ⚙️ [메인 화면 상단] 캐릭터 & 위치 커스텀 설정 창
+# =========================================================
+with st.expander("🛠️ 배경 캐릭터 & 위치 커스텀 설정하기", expanded=False):
+    st.subheader("1. 캐릭터 모드 및 스타일")
+    char_mode = st.radio("모드 선택", ["움직이는 GIF 🎬", "이모지 🧸"], horizontal=True)
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        char_size = st.slider("크기 (px)", min_value=20, max_value=150, value=70)
+    with col_b:
+        char_opacity = st.slider("투명도", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+
+    st.markdown("---")
+    st.subheader("2. 캐릭터 입력 및 위치 상세 조정")
+
+    # 기본 GIF 값 설정
+    default_gifs = [
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgzZnpqam12ZmljMmxqZHk3aGs0aWs2Zm5ndXVpMmgzeHNvdnhmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jpbnoe3UIa8TU8LM13/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGN5cG1wbnhxdmsyY2tzOHhhNzVnbms0cWhzeXFkODd4c2xmbmt4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/C14EipS9xR3pBKa7y4/giphy.gif"
+    ]
+    default_emojis = ["🧸", "🐱", "🐰", "🐶"]
+
+    selected_items = []
+    positions = []
+
+    # 4개 캐릭터 각각 위치와 URL 설정
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**📍 캐릭터 1 (왼쪽 위)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item1 = st.text_input("GIF URL 1", value=default_gifs[0], key="u1")
+        else:
+            item1 = st.text_input("이모지 1", value=default_emojis[0], key="e1")
+        top1 = st.slider("상하 위치 1 (%)", 0, 100, 15, key="t1")
+        left1 = st.slider("좌우 위치 1 (%)", 0, 50, 3, key="l1")
+        selected_items.append(item1)
+        positions.append((top1, f"left: {left1}%"))
+
+        st.markdown("**📍 캐릭터 2 (왼쪽 아래)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item2 = st.text_input("GIF URL 2", value=default_gifs[1], key="u2")
+        else:
+            item2 = st.text_input("이모지 2", value=default_emojis[1], key="e2")
+        top2 = st.slider("상하 위치 2 (%)", 0, 100, 65, key="t2")
+        left2 = st.slider("좌우 위치 2 (%)", 0, 50, 4, key="l2")
+        selected_items.append(item2)
+        positions.append((top2, f"left: {left2}%"))
+
+    with col2:
+        st.markdown("**📍 캐릭터 3 (오른쪽 위)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item3 = st.text_input("GIF URL 3", value=default_gifs[2], key="u3")
+        else:
+            item3 = st.text_input("이모지 3", value=default_emojis[2], key="e3")
+        top3 = st.slider("상하 위치 3 (%)", 0, 100, 20, key="t3")
+        right3 = st.slider("좌우 위치 3 (%)", 0, 50, 3, key="r3")
+        selected_items.append(item3)
+        positions.append((top3, f"right: {right3}%"))
+
+        st.markdown("**📍 캐릭터 4 (오른쪽 아래)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item4 = st.text_input("GIF URL 4", value=default_gifs[3], key="u4")
+        else:
+            item4 = st.text_input("이모지 4", value=default_emojis[3], key="e4")
+        top4 = st.slider("상하 위치 4 (%)", 0, 100, 70, key="t4")
+        right4 = st.slider("좌우 위치 4 (%)", 0, 50, 4, key="r4")
+        selected_items.append(item4)
+        positions.append((top4, f"right: {right4}%"))
+
 st.divider()
+
+# =========================================================
+# 🎲 운세 뽑기 메인 기능
+# =========================================================
+st.write("버튼을 눌러 오늘의 행운의 숫자를 확인하고 운세를 점쳐보세요!")
 
 if not st.session_state.has_drawn:
     if st.button("🎲 뽑기 시작!", use_container_width=True):
@@ -141,5 +158,43 @@ if st.session_state.has_drawn:
     components.html(card_html, height=250)
 
 # =========================================================
-# 🆕 [바뀐 부분 2 & 3] GIF vs 이모지 동적 HTML HTML 렌더링
-#
+# 🖼️ 배경 캐릭터 동적 HTML 렌더링
+# =========================================================
+if char_mode == "움직이는 GIF 🎬":
+    elements_html = "".join([
+        f'<img src="{selected_items[i]}" class="bg-char char{i+1}">'
+        for i in range(4)
+    ])
+    size_style = f"width: {char_size}px; height: auto;"
+else:
+    elements_html = "".join([
+        f'<div class="bg-char char{i+1}">{selected_items[i]}</div>'
+        for i in range(4)
+    ])
+    size_style = f"font-size: {char_size}px;"
+
+bg_custom_html = f"""
+<style>
+    .bg-char {{
+        position: fixed;
+        {size_style}
+        opacity: {char_opacity};
+        z-index: 0;
+        pointer-events: none;
+    }}
+
+    .char1 {{ top: {positions[0][0]}%; {positions[0][1]}; animation: floatChar 3.0s ease-in-out infinite alternate; }}
+    .char2 {{ top: {positions[1][0]}%; {positions[1][1]}; animation: floatChar 4.0s ease-in-out infinite alternate-reverse; }}
+    .char3 {{ top: {positions[2][0]}%; {positions[2][1]}; animation: floatChar 3.5s ease-in-out infinite alternate; }}
+    .char4 {{ top: {positions[3][0]}%; {positions[3][1]}; animation: floatChar 4.5s ease-in-out infinite alternate-reverse; }}
+
+    @keyframes floatChar {{
+        0% {{ transform: translateY(0px) rotate(0deg); }}
+        100% {{ transform: translateY(-15px) rotate(6deg); }}
+    }}
+</style>
+
+{elements_html}
+"""
+
+components.html(bg_custom_html, height=0)
