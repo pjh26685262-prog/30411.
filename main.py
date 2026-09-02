@@ -2,10 +2,44 @@ import random
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 페이지 설정 (사이드바 없이 중앙 배치)
+# 페이지 설정 (사이드바 배치 활성화)
 st.set_page_config(
     page_title="오늘의 운세 뽑기", page_icon="🎯", layout="centered"
 )
+
+# ==================== 사용자 커스텀 설정 (사이드바) ====================
+st.sidebar.header("🎨 배경 캐릭터 커스텀")
+
+# 1. 캐릭터 선택 옵션
+char_option = st.sidebar.selectbox(
+    "배경 캐릭터 테마 선택",
+    ["동물 친구들 🧸🐱🐰🐶", "운세 & 행운 🍀🔮🌟💰", "직접 이모지 입력"]
+)
+
+if char_option == "동물 친구들 🧸🐱🐰🐶":
+    selected_chars = ["🧸", "🐱", "🐰", "🐶"]
+elif char_option == "운세 & 행운 🍀🔮🌟💰":
+    selected_chars = ["🍀", "🔮", "🌟", "💰"]
+else:
+    # 사용자가 직접 이모지 4개 입력
+    custom_input = st.sidebar.text_input("이모지 4개를 입력하세요 (공백 구분)", "🦊 🐼 🐯 🦄")
+    selected_chars = custom_input.split()
+    # 입력이 부족할 경우 기본값 처리
+    while len(selected_chars) < 4:
+        selected_chars.append("✨")
+
+# 2. 크기 및 투명도 조절
+char_size = st.sidebar.slider("캐릭터 크기 (px)", min_value=20, max_value=100, value=50)
+char_opacity = st.sidebar.slider("캐릭터 투명도", min_value=0.1, max_value=1.0, value=0.7, step=0.1)
+
+# 3. 애니메이션 속도 조절
+anim_speed = st.sidebar.select_slider(
+    "애니메이션 속도",
+    options=["느리게", "보통", "빠르게"],
+    value="보통"
+)
+
+speed_multiplier = {"느리게": 1.5, "보통": 1.0, "빠르게": 0.5}[anim_speed]
 
 
 # 세션 상태 초기화
@@ -195,3 +229,34 @@ if st.session_state.has_drawn:
         <div class="container">{card_code}</div>
         """
         components.html(card_html, height=250)
+
+
+# ==================== 동적 배경 캐릭터 HTML 생성 ====================
+bg_custom_html = f"""
+<style>
+    .bg-char {{
+        position: fixed;
+        font-size: {char_size}px;
+        opacity: {char_opacity};
+        z-index: 0;
+        pointer-events: none;
+    }}
+
+    .char1 {{ top: 15%; left: 4%; animation: floatChar {3.0 * speed_multiplier}s ease-in-out infinite alternate; }}
+    .char2 {{ top: 65%; left: 6%; animation: floatChar {4.0 * speed_multiplier}s ease-in-out infinite alternate-reverse; }}
+    .char3 {{ top: 20%; right: 4%; animation: floatChar {3.5 * speed_multiplier}s ease-in-out infinite alternate; }}
+    .char4 {{ top: 70%; right: 6%; animation: floatChar {4.5 * speed_multiplier}s ease-in-out infinite alternate-reverse; }}
+
+    @keyframes floatChar {{
+        0% {{ transform: translateY(0px) rotate(0deg); }}
+        100% {{ transform: translateY(-20px) rotate(12deg); }}
+    }}
+</style>
+
+<div class="bg-char char1">{selected_chars[0]}</div>
+<div class="bg-char char2">{selected_chars[1]}</div>
+<div class="bg-char char3">{selected_chars[2]}</div>
+<div class="bg-char char4">{selected_chars[3]}</div>
+"""
+
+components.html(bg_custom_html, height=0)
