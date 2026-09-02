@@ -2,196 +2,199 @@ import random
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 페이지 설정 (사이드바 없이 중앙 배치)
+# 페이지 설정
 st.set_page_config(
-    page_title="오늘의 운세 뽑기", page_icon="🎯", layout="centered"
+    page_title="오늘의 운세 뽑기", page_icon="🎯", layout="centered"
 )
-
 
 # 세션 상태 초기화
 if "has_drawn" not in st.session_state:
-    st.session_state.has_drawn = False
+    st.session_state.has_drawn = False
 if "drawn_number" not in st.session_state:
-    st.session_state.drawn_number = None
+    st.session_state.drawn_number = None
 if "fortune_result" not in st.session_state:
-    st.session_state.fortune_result = None
-
+    st.session_state.fortune_result = None
 
 # 운세 판정 및 랜덤 효과 매핑 함수
 def get_fortune(number):
-    if number >= 81:
-        effects = ["gold_pulse", "rainbow_sparkle", "king_crown"]
-        return (
-            "🌟 대길 (최고의 대폭발 행운!)",
-            "와우! 점수가 엄청 높습니다! 오늘 하루는 무엇을 하든 완벽하게 풀리는 최고의 날입니다. 행운이 폭발합니다!",
-            random.choice(effects),
-        )
-    elif number >= 51:
-        effects = ["clover_float", "star_bounce", "happy_7"]
-        return (
-            "✨ 길 (대단히 좋은 하루)",
-            "운이 아주 좋습니다! 기분 좋은 소식과 소소한 행운들이 당신의 하루를 가득 채워줄 거예요.",
-            random.choice(effects),
-        )
-    elif number >= 41:
-        effects = ["joker_spin", "coffee_relax"]
-        return (
-            "☕ 평 (무난하고 평범한 하루)",
-            "특별한 사건 없이 평화로운 하루입니다. 마음 편히 휴식을 취하기에 딱 좋은 날이에요.",
-            random.choice(effects),
-        )
-    else:
-        effects = ["sad_spade", "broken_heart", "thunder_skull"]
-        return (
-            "💀 대흉 (절망적인 운세...)",
-            "앗... 점수가 너무 낮습니다! 오늘은 발밑을 조심하시고 중요한 결정은 내일로 미루시는 게 좋겠어요...",
-            random.choice(effects),
-        )
+    if number >= 81:
+        effects = ["gold_pulse", "rainbow_sparkle", "king_crown"]
+        return ("🌟 대길 (최고의 대폭발 행운!)", "와우! 점수가 엄청 높습니다! 오늘 하루는 무엇을 하든 완벽하게 풀리는 최고의 날입니다.", random.choice(effects))
+    elif number >= 51:
+        effects = ["clover_float", "star_bounce", "happy_7"]
+        return ("✨ 길 (대단히 좋은 하루)", "운이 아주 좋습니다! 기분 좋은 소식과 소소한 행운들이 당신의 하루를 가득 채워줄 거예요.", random.choice(effects))
+    elif number >= 41:
+        effects = ["joker_spin", "coffee_relax"]
+        return ("☕ 평 (무난하고 평범한 하루)", "특별한 사건 없이 평화로운 하루입니다. 마음 편히 휴식을 취하기에 딱 좋은 날이에요.", random.choice(effects))
+    else:
+        effects = ["sad_spade", "broken_heart", "thunder_skull"]
+        return ("💀 대흉 (절망적인 운세...)", "앗... 점수가 너무 낮습니다! 오늘은 발밑을 조심하시고 중요한 결정은 내일로 미루시는 게 좋겠어요...", random.choice(effects))
 
-
-# UI 구성
+# UI 타이틀
 st.title("🎯 하루 한 번 운세 뽑기")
-st.write("버튼을 눌러 오늘의 행운의 숫자를 확인하고 운세를 점쳐보세요!")
+
+# =========================================================
+# ⚙️ [메인 화면 상단] 캐릭터 & 위치 커스텀 설정 창
+# =========================================================
+with st.expander("🛠️ 배경 캐릭터 & 위치 커스텀 설정하기", expanded=False):
+    st.subheader("1. 캐릭터 모드 및 스타일")
+    char_mode = st.radio("모드 선택", ["움직이는 GIF 🎬", "이모지 🧸"], horizontal=True)
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        char_size = st.slider("크기 (px)", min_value=20, max_value=150, value=70)
+    with col_b:
+        char_opacity = st.slider("투명도", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+
+    st.markdown("---")
+    st.subheader("2. 캐릭터 입력 및 위치 상세 조정")
+
+    # 기본 GIF 값 설정
+    default_gifs = [
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgzZnpqam12ZmljMmxqZHk3aGs0aWs2Zm5ndXVpMmgzeHNvdnhmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jpbnoe3UIa8TU8LM13/giphy.gif",
+        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGN5cG1wbnhxdmsyY2tzOHhhNzVnbms0cWhzeXFkODd4c2xmbmt4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/C14EipS9xR3pBKa7y4/giphy.gif"
+    ]
+    default_emojis = ["🧸", "🐱", "🐰", "🐶"]
+
+    selected_items = []
+    positions = []
+
+    # 4개 캐릭터 각각 위치와 URL 설정
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**📍 캐릭터 1 (왼쪽 위)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item1 = st.text_input("GIF URL 1", value=default_gifs[0], key="u1")
+        else:
+            item1 = st.text_input("이모지 1", value=default_emojis[0], key="e1")
+        top1 = st.slider("상하 위치 1 (%)", 0, 100, 15, key="t1")
+        left1 = st.slider("좌우 위치 1 (%)", 0, 50, 3, key="l1")
+        selected_items.append(item1)
+        positions.append((top1, f"left: {left1}%"))
+
+        st.markdown("**📍 캐릭터 2 (왼쪽 아래)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item2 = st.text_input("GIF URL 2", value=default_gifs[1], key="u2")
+        else:
+            item2 = st.text_input("이모지 2", value=default_emojis[1], key="e2")
+        top2 = st.slider("상하 위치 2 (%)", 0, 100, 65, key="t2")
+        left2 = st.slider("좌우 위치 2 (%)", 0, 50, 4, key="l2")
+        selected_items.append(item2)
+        positions.append((top2, f"left: {left2}%"))
+
+    with col2:
+        st.markdown("**📍 캐릭터 3 (오른쪽 위)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item3 = st.text_input("GIF URL 3", value=default_gifs[2], key="u3")
+        else:
+            item3 = st.text_input("이모지 3", value=default_emojis[2], key="e3")
+        top3 = st.slider("상하 위치 3 (%)", 0, 100, 20, key="t3")
+        right3 = st.slider("좌우 위치 3 (%)", 0, 50, 3, key="r3")
+        selected_items.append(item3)
+        positions.append((top3, f"right: {right3}%"))
+
+        st.markdown("**📍 캐릭터 4 (오른쪽 아래)**")
+        if char_mode == "움직이는 GIF 🎬":
+            item4 = st.text_input("GIF URL 4", value=default_gifs[3], key="u4")
+        else:
+            item4 = st.text_input("이모지 4", value=default_emojis[3], key="e4")
+        top4 = st.slider("상하 위치 4 (%)", 0, 100, 70, key="t4")
+        right4 = st.slider("좌우 위치 4 (%)", 0, 50, 4, key="r4")
+        selected_items.append(item4)
+        positions.append((top4, f"right: {right4}%"))
 
 st.divider()
 
-# 뽑기 버튼 영역
+# =========================================================
+# 🎲 운세 뽑기 메인 기능
+# =========================================================
+st.write("버튼을 눌러 오늘의 행운의 숫자를 확인하고 운세를 점쳐보세요!")
+
 if not st.session_state.has_drawn:
-    if st.button("🎲 뽑기 시작!", use_container_width=True):
-        number = random.randint(1, 100)
-        title, desc, effect = get_fortune(number)
-
-        st.session_state.drawn_number = number
-        st.session_state.has_drawn = True
-        st.session_state.fortune_result = (title, desc, effect)
-
-        st.rerun()
+    if st.button("🎲 뽑기 시작!", use_container_width=True):
+        number = random.randint(1, 100)
+        title, desc, effect = get_fortune(number)
+        st.session_state.drawn_number = number
+        st.session_state.has_drawn = True
+        st.session_state.fortune_result = (title, desc, effect)
+        st.rerun()
 else:
-    st.write("⏰ **오늘의 운세는 이미 확인하셨습니다. 내일 다시 도전해 주세요!**")
+    st.write("⏰ **오늘의 운세는 이미 확인하셨습니다. 내일 다시 도전해 주세요!**")
 
-# 결과 출력 영역
 if st.session_state.has_drawn:
-    st.subheader("📊 오늘의 뽑기 결과")
+    st.subheader("📊 오늘의 뽑기 결과")
+    num = st.session_state.drawn_number
+    title, desc, effect = st.session_state.fortune_result
 
-    num = st.session_state.drawn_number
-    title, desc, effect = st.session_state.fortune_result
+    st.metric(label="나의 행운의 숫자 (1~100)", value=f"{num}점")
+    st.markdown(f"### {title}")
+    st.markdown(f"{desc}")
 
-    st.metric(label="나의 행운의 숫자 (1~100)", value=f"{num}점")
+    # 카드 이펙트 처리
+    if effect in ["gold_pulse", "rainbow_sparkle", "king_crown"]:
+        st.balloons()
+        card_code = '<div class="card gold-pulse"><div class="top">♦ A</div><div class="center">👑</div><div class="bottom">♦ A</div></div>'
+    elif effect in ["clover_float", "star_bounce", "happy_7"]:
+        st.snow()
+        card_code = '<div class="card clover-card"><div class="top">♣ 7</div><div class="center">🍀</div><div class="bottom">♣ 7</div></div>'
+    elif effect in ["joker_spin", "coffee_relax"]:
+        card_code = '<div class="card relax-card"><div class="top">☕ 10</div><div class="center">☕</div><div class="bottom">☕ 10</div></div>'
+    else:
+        card_code = '<div class="card shake-card"><div class="top">♠ A</div><div class="center">😭</div><div class="bottom">♠ A</div></div>'
 
-    st.markdown(f"### {title}")
-    st.markdown(f"{desc}")
+    card_html = f"""
+    <style>
+        .container {{ display: flex; justify-content: center; margin-top: 20px; }}
+        .card {{ width: 140px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; font-family: Arial; font-weight: bold; background: #fff; border: 3px solid #ffd700; }}
+        .top {{ font-size: 24px; }}
+        .center {{ font-size: 48px; text-align: center; }}
+        .bottom {{ font-size: 24px; text-align: right; transform: rotate(180deg); }}
+    </style>
+    <div class="container">{card_code}</div>
+    """
+    components.html(card_html, height=250)
 
-    # ==================== 이펙트 처리 영역 ====================
+# =========================================================
+# 🖼️ 배경 캐릭터 동적 HTML 렌더링
+# =========================================================
+if char_mode == "움직이는 GIF 🎬":
+    elements_html = "".join([
+        f'<img src="{selected_items[i]}" class="bg-char char{i+1}">'
+        for i in range(4)
+    ])
+    size_style = f"width: {char_size}px; height: auto;"
+else:
+    elements_html = "".join([
+        f'<div class="bg-char char{i+1}">{selected_items[i]}</div>'
+        for i in range(4)
+    ])
+    size_style = f"font-size: {char_size}px;"
 
-    # [81~100점 효과들]
-    if effect in ["gold_pulse", "rainbow_sparkle", "king_crown"]:
-        st.balloons()
-        
-        if effect == "gold_pulse":
-            card_code = '<div class="card gold-pulse"><div class="top">♦ A</div><div class="center">👑</div><div class="bottom">♦ A</div></div>'
-        elif effect == "rainbow_sparkle":
-            card_code = '<div class="card rainbow-card"><div class="top">♥ A</div><div class="center">💎</div><div class="bottom">♥ A</div></div>'
-        else:
-            card_code = '<div class="card crown-card"><div class="top">♠ K</div><div class="center">🏆</div><div class="bottom">♠ K</div></div>'
+bg_custom_html = f"""
+<style>
+    .bg-char {{
+        position: fixed;
+        {size_style}
+        opacity: {char_opacity};
+        z-index: 0;
+        pointer-events: none;
+    }}
 
-        card_html = f"""
-        <style>
-            .container {{ display: flex; justify-content: center; margin-top: 20px; }}
-            .card {{ width: 140px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; font-family: Arial; font-weight: bold; }}
-            .top {{ font-size: 24px; }}
-            .center {{ font-size: 48px; text-align: center; }}
-            .bottom {{ font-size: 24px; text-align: right; transform: rotate(180deg); }}
-            
-            .gold-pulse {{ background: linear-gradient(135deg, #f6d365, #fda085); border: 3px solid #ffd700; color: #fff; animation: pulse 1s infinite alternate; }}
-            .rainbow-card {{ background: linear-gradient(135deg, #ff9a9e, #fecfef, #a1c4fd); border: 3px solid #fff; color: #fff; animation: bounce 0.8s infinite alternate; }}
-            .crown-card {{ background: #2c3e50; border: 3px solid #f1c40f; color: #f1c40f; animation: pulse 1.2s infinite alternate; }}
+    .char1 {{ top: {positions[0][0]}%; {positions[0][1]}; animation: floatChar 3.0s ease-in-out infinite alternate; }}
+    .char2 {{ top: {positions[1][0]}%; {positions[1][1]}; animation: floatChar 4.0s ease-in-out infinite alternate-reverse; }}
+    .char3 {{ top: {positions[2][0]}%; {positions[2][1]}; animation: floatChar 3.5s ease-in-out infinite alternate; }}
+    .char4 {{ top: {positions[3][0]}%; {positions[3][1]}; animation: floatChar 4.5s ease-in-out infinite alternate-reverse; }}
 
-            @keyframes pulse {{ 0% {{ transform: scale(1); }} 100% {{ transform: scale(1.08); }} }}
-            @keyframes bounce {{ 0% {{ transform: translateY(0); }} 100% {{ transform: translateY(-15px); }} }}
-        </style>
-        <div class="container">{card_code}</div>
-        """
-        components.html(card_html, height=250)
+    @keyframes floatChar {{
+        0% {{ transform: translateY(0px) rotate(0deg); }}
+        100% {{ transform: translateY(-15px) rotate(6deg); }}
+    }}
+</style>
 
-    # [51~80점 효과들]
-    elif effect in ["clover_float", "star_bounce", "happy_7"]:
-        st.snow()
-        
-        if effect == "clover_float":
-            card_code = '<div class="card clover-card"><div class="top">♣ 7</div><div class="center">🍀</div><div class="bottom">♣ 7</div></div>'
-        elif effect == "star_bounce":
-            card_code = '<div class="card star-card"><div class="top">★ 7</div><div class="center">⭐</div><div class="bottom">★ 7</div></div>'
-        else:
-            card_code = '<div class="card happy-card"><div class="top">♥ 7</div><div class="center">😄</div><div class="bottom">♥ 7</div></div>'
+{elements_html}
+"""
 
-        card_html = f"""
-        <style>
-            .container {{ display: flex; justify-content: center; margin-top: 20px; }}
-            .card {{ width: 140px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; font-family: Arial; font-weight: bold; background: #fff; }}
-            .top {{ font-size: 24px; }}
-            .center {{ font-size: 48px; text-align: center; }}
-            .bottom {{ font-size: 24px; text-align: right; transform: rotate(180deg); }}
-            
-            .clover-card {{ border: 3px solid #2e7d32; color: #2e7d32; animation: float 1.8s ease-in-out infinite alternate; }}
-            .star-card {{ border: 3px solid #f39c12; color: #f39c12; animation: float 1.2s ease-in-out infinite alternate; }}
-            .happy-card {{ border: 3px solid #e74c3c; color: #e74c3c; animation: float 2s ease-in-out infinite alternate; }}
-
-            @keyframes float {{ 0% {{ transform: translateY(0); }} 100% {{ transform: translateY(-12px); }} }}
-        </style>
-        <div class="container">{card_code}</div>
-        """
-        components.html(card_html, height=250)
-
-    # [41~50점 효과들]
-    elif effect in ["joker_spin", "coffee_relax"]:
-        if effect == "joker_spin":
-            card_code = '<div class="card spin-card"><div class="top">JOKER</div><div class="center">🃏</div><div class="bottom">JOKER</div></div>'
-        else:
-            card_code = '<div class="card relax-card"><div class="top">☕ 10</div><div class="center">☕</div><div class="bottom">☕ 10</div></div>'
-
-        card_html = f"""
-        <style>
-            .container {{ display: flex; justify-content: center; margin-top: 20px; }}
-            .card {{ width: 140px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; font-family: Arial; font-weight: bold; background: #fff; border: 3px solid #7f8c8d; color: #7f8c8d; }}
-            .top {{ font-size: 20px; }}
-            .center {{ font-size: 48px; text-align: center; }}
-            .bottom {{ font-size: 20px; text-align: right; transform: rotate(180deg); }}
-            
-            .spin-card {{ animation: spin 5s linear infinite; }}
-            .relax-card {{ animation: swing 3s ease-in-out infinite alternate; }}
-
-            @keyframes spin {{ 0% {{ transform: rotateY(0deg); }} 100% {{ transform: rotateY(360deg); }} }}
-            @keyframes swing {{ 0% {{ transform: rotate(-5deg); }} 100% {{ transform: rotate(5deg); }} }}
-        </style>
-        <div class="container">{card_code}</div>
-        """
-        components.html(card_html, height=250)
-
-    # [1~40점 효과들]
-    elif effect in ["sad_spade", "broken_heart", "thunder_skull"]:
-        if effect == "sad_spade":
-            card_code = '<div class="card shake-card"><div class="top">♠ A</div><div class="center">😭</div><div class="bottom">♠ A</div></div>'
-        elif effect == "broken_heart":
-            card_code = '<div class="card break-card"><div class="top">♥ 2</div><div class="center">💔</div><div class="bottom">♥ 2</div></div>'
-        else:
-            card_code = '<div class="card dark-card"><div class="top">◆ 3</div><div class="center">⚡</div><div class="bottom">◆ 3</div></div>'
-
-        card_html = f"""
-        <style>
-            .container {{ display: flex; justify-content: center; margin-top: 20px; }}
-            .card {{ width: 140px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; font-family: Arial; font-weight: bold; }}
-            .top {{ font-size: 24px; }}
-            .center {{ font-size: 48px; text-align: center; }}
-            .bottom {{ font-size: 24px; text-align: right; transform: rotate(180deg); }}
-            
-            .shake-card {{ background: #ffffff; border: 3px solid #d9534f; color: #d9534f; animation: shake 0.5s ease-in-out infinite alternate; }}
-            .break-card {{ background: #2c3e50; border: 3px solid #95a5a6; color: #e74c3c; animation: drop 1s ease infinite alternate; }}
-            .dark-card {{ background: #1a1a1a; border: 3px solid #e74c3c; color: #f39c12; animation: flash 0.8s infinite alternate; }}
-
-            @keyframes shake {{ 0% {{ transform: rotate(-8deg); }} 100% {{ transform: rotate(8deg); }} }}
-            @keyframes drop {{ 0% {{ transform: translateY(0); }} 100% {{ transform: translateY(15px); }} }}
-            @keyframes flash {{ 0% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
-        </style>
-        <div class="container">{card_code}</div>
-        """
-        components.html(card_html, height=250)
+components.html(bg_custom_html, height=0)
