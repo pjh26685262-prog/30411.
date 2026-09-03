@@ -48,7 +48,7 @@ with st.expander("🛠️ 배경 이미지 & 위치 커스텀 설정하기", exp
     st.markdown("---")
     st.subheader("2. 캐릭터 이미지 URL 및 위치 조정")
 
-    # 안정적인 기본 이미지(GIF/PNG) 링크 예시
+    # 안정적인 기본 이미지(GIF) 링크 예시
     default_imgs = [
         "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
         "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
@@ -78,9 +78,8 @@ with st.expander("🛠️ 배경 이미지 & 위치 커스텀 설정하기", exp
         st.markdown("**📍 이미지 4 (오른쪽 아래)**")
         img4 = st.text_input("사진/GIF URL 4", value=default_imgs[3], key="u4")
         top4 = st.slider("상하 위치 4 (%)", 0, 100, 70, key="t4")
-        right4 = st.slider("좌우 위치 4 (%)", 0, 100, 4, key="r4")
+        right4 = st.slider("좌우 위치 4 (%)", 0, 50, 4, key="r4")
 
-# 입력된 값들을 리스트로 묶기
 selected_images = [img1, img2, img3, img4]
 positions = [
     (top1, f"left: {left1}%"),
@@ -141,7 +140,7 @@ if st.session_state.has_drawn:
     components.html(card_html, height=250)
 
 # =========================================================
-# 🖼️ 배경 이미지 동적 HTML 렌더링
+# 🖼️ 배경 이미지 동적 HTML 렌더링 (st.markdown으로 수정)
 # =========================================================
 elements_html = "".join([
     f'<img src="{selected_images[i]}" class="bg-img img{i+1}">'
@@ -173,4 +172,4 @@ bg_custom_html = f"""
 {elements_html}
 """
 
-components.html(bg_custom_html, height=0)
+st.markdown(bg_custom_html, unsafe_allow_html=True)
