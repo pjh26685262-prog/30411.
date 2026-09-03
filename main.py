@@ -41,25 +41,21 @@ with st.expander("🛠️ 배경 이미지 & 위치 커스텀 설정하기", exp
     
     col_a, col_b = st.columns(2)
     with col_a:
-        img_size = st.slider("이미지 크기 (px)", min_value=30, max_value=200, value=80)
+        img_size = st.slider("이미지 크기 (px)", min_value=30, max_value=200, value=80, key="img_size_slider")
     with col_b:
-        img_opacity = st.slider("투명도", min_value=0.1, max_value=1.0, value=0.8, step=0.1)
+        img_opacity = st.slider("투명도", min_value=0.1, max_value=1.0, value=0.8, step=0.1, key="img_opacity_slider")
 
     st.markdown("---")
     st.subheader("2. 캐릭터 이미지 URL 및 위치 조정")
 
-    # 기본 이미지(GIF) URL 예시
+    # 안정적인 기본 이미지(GIF/PNG) 링크 예시
     default_imgs = [
-        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
-        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
-        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgzZnpqam12ZmljMmxqZHk3aGs0aWs2Zm5ndXVpMmgzeHNvdnhmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jpbnoe3UIa8TU8LM13/giphy.gif",
-        "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGN5cG1wbnhxdmsyY2tzOHhhNzVnbms0cWhzeXFkODd4c2xmbmt4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/C14EipS9xR3pBKa7y4/giphy.gif"
+        "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnFlOHp6aW8xNWNzeHZ4Nm04b3J2aGF6eDRnMnhueDFuYW9uZ3JmciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BzyTuYCmvSORqs1ABM/giphy.gif",
+        "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z6ZnU1bjRvemxzaHRkNmY5bzBycWZzeG91eGQ0eG15ZXZ3ZnJmZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ICOgUNjpvO0PC/giphy.gif",
+        "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHgzZnpqam12ZmljMmxqZHk3aGs0aWs2Zm5ndXVpMmgzeHNvdnhmeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jpbnoe3UIa8TU8LM13/giphy.gif",
+        "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGN5cG1wbnhxdmsyY2tzOHhhNzVnbms0cWhzeXFkODd4c2xmbmt4ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/C14EipS9xR3pBKa7y4/giphy.gif"
     ]
 
-    selected_images = []
-    positions = []
-
-    # 4개 이미지 위치 및 URL 각각 설정
     col1, col2 = st.columns(2)
     
     with col1:
@@ -67,30 +63,31 @@ with st.expander("🛠️ 배경 이미지 & 위치 커스텀 설정하기", exp
         img1 = st.text_input("사진/GIF URL 1", value=default_imgs[0], key="u1")
         top1 = st.slider("상하 위치 1 (%)", 0, 100, 15, key="t1")
         left1 = st.slider("좌우 위치 1 (%)", 0, 50, 3, key="l1")
-        selected_images.append(img1)
-        positions.append((top1, f"left: {left1}%"))
 
         st.markdown("**📍 이미지 2 (왼쪽 아래)**")
         img2 = st.text_input("사진/GIF URL 2", value=default_imgs[1], key="u2")
         top2 = st.slider("상하 위치 2 (%)", 0, 100, 65, key="t2")
         left2 = st.slider("좌우 위치 2 (%)", 0, 50, 4, key="l2")
-        selected_images.append(img2)
-        positions.append((top2, f"left: {left2}%"))
 
     with col2:
         st.markdown("**📍 이미지 3 (오른쪽 위)**")
         img3 = st.text_input("사진/GIF URL 3", value=default_imgs[2], key="u3")
         top3 = st.slider("상하 위치 3 (%)", 0, 100, 20, key="t3")
         right3 = st.slider("좌우 위치 3 (%)", 0, 50, 3, key="r3")
-        selected_images.append(img3)
-        positions.append((top3, f"right: {right3}%"))
 
         st.markdown("**📍 이미지 4 (오른쪽 아래)**")
         img4 = st.text_input("사진/GIF URL 4", value=default_imgs[3], key="u4")
         top4 = st.slider("상하 위치 4 (%)", 0, 100, 70, key="t4")
-        right4 = st.slider("좌우 위치 4 (%)", 0, 50, 4, key="r4")
-        selected_images.append(img4)
-        positions.append((top4, f"right: {right4}%"))
+        right4 = st.slider("좌우 위치 4 (%)", 0, 100, 4, key="r4")
+
+# 입력된 값들을 리스트로 묶기
+selected_images = [img1, img2, img3, img4]
+positions = [
+    (top1, f"left: {left1}%"),
+    (top2, f"left: {left2}%"),
+    (top3, f"right: {right3}%"),
+    (top4, f"right: {right4}%")
+]
 
 st.divider()
 
